@@ -96,14 +96,10 @@ void drawGame() {
 
 /**
  * Moves the paddle along the x-axis at the given speed
- * @param direction (-1 : to the left | 1 : to the right)
+ * @param speed (-1 : to the left | 1 : to the right)
 */
-void MovePaddle(int direction) {
-    if (direction == -1) {
-        paddle_x -= PADDLE_SPEED;
-    } else if (direction == 1) {    
-        paddle_x += PADDLE_SPEED;
-    }
+void MovePaddle(int speed) { 
+    paddle_x += speed;
     if (paddle_x < 0) {
         paddle_x = 0;
     }
@@ -115,10 +111,10 @@ void MovePaddle(int direction) {
 void KeyPressed(SDL_Keycode touche) {
     switch (touche) {
         case SDLK_q:
-            MovePaddle(-1);
+            MovePaddle(-PADDLE_SPEED);
             break;
         case SDLK_d:
-            MovePaddle(1);
+            MovePaddle(PADDLE_SPEED);
             break;
         case SDLK_ESCAPE:
             freeAndTerminate();
