@@ -18,6 +18,10 @@
 #define GAP_HORIZ_BRICK 8
 #define NB_LIVES_BRICKS 1
 #define PIX_WALL 130
+#define IN_GAME 1
+#define LOSE 2
+#define WIN 3
+#define PAUSE 0
 
 float paddle_x;
 float paddle_y;
@@ -25,6 +29,8 @@ float ball_x;
 float ball_y;
 float ball_speed_x = -2;
 float ball_speed_y = -1;
+int nb_global_bricks = NB_LIGNE * NB_BRIQUE;
+int state_game = PAUSE;
 
 int initBricks();
 
@@ -119,6 +125,8 @@ void KeyPressed(SDL_Keycode touche) {
         case SDLK_ESCAPE:
             freeAndTerminate();
             break;
+        case (SDLK_q && SDLK_d):
+            state_game = IN_GAME; 
         default:
             break;
     }
@@ -139,7 +147,7 @@ void WallCollision() {
     }
     //Bot wall
     if (ball_y + BALL_RADIUS >= WINDOW_HEIGHT) {
-        //LOSE
+        state_game = LOSE;
     }
     
     //Left wall 
@@ -280,6 +288,12 @@ void BrickCollision(int i, int j) {
 
     if (change_speed_x == 1 || change_speed_y == 1) {
         tabBricks[i][j].lives--;
+        if (tabBricks[i][j].lives == 0) {
+            nb_global_bricks--;
+            if (nb_global_bricks == 0) {
+                state_game = WIN;
+            }
+        }
     }
 
 }
@@ -326,8 +340,10 @@ void gameLoop() {
                     break;
             }
         }
-        moveBall();
-        drawGame();
+        if (state_game == IN_GAME) {
+            moveBall();
+            drawGame();
+        }
     }
 }
 
