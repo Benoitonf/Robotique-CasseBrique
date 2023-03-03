@@ -115,11 +115,9 @@ void MovePaddle(int direction) {
 void KeyPressed(SDL_Keycode touche) {
     switch (touche) {
         case SDLK_q:
-            printf("Q\n");
             MovePaddle(-1);
             break;
         case SDLK_d:
-            printf("D\n");
             MovePaddle(1);
             break;
         case SDLK_ESCAPE:
@@ -160,6 +158,9 @@ void WallCollision() {
     }
 }
 
+/**
+ * Collision between ball and paddle
+*/
 void PaddleCollision() {
     //Position relative of the ball
     int top_ball = ball_y - BALL_RADIUS;
@@ -230,12 +231,81 @@ void PaddleCollision() {
         ball_speed_x = -ball_speed_x;
 }
 
+/**
+ * Collision between ball and brick
+*/
+void BrickCollision(int i, int j) {
+    if (tabBricks[i][j].lives == 0) {
+        return;
+    }
+    
+    //Position relative of the ball
+    int top_ball = ball_y - BALL_RADIUS;
+    int bot_ball = ball_y + BALL_RADIUS;
+    int left_ball = ball_x - BALL_RADIUS;
+    int right_ball = ball_x + BALL_RADIUS;
+
+    //Position relative of the brick
+    int top_brick = tabBricks[i][j].scrawlBrick.pos_y;
+    int bot_brick = tabBricks[i][j].scrawlBrick.pos_y + tabBricks[i][j].scrawlBrick.height;
+    int left_brick = tabBricks[i][j].scrawlBrick.pos_x;
+    int right_brick = tabBricks[i][j].scrawlBrick.pos_x + tabBricks[i][j].scrawlBrick.length;
+
+    //
+    int change_speed_x = 0, change_speed_y = 0;
+
+    //Axe Vertical
+    if (right_ball >= left_brick && left_ball <= right_brick) {
+        //Top collision
+        if (bot_ball - top_brick >= 0 && bot_ball - top_brick <= ball_speed_y) {
+            change_speed_y = 1;
+        }
+        //Bottom collision
+        else if (top_ball - bot_brick <= 0 && top_ball - bot_brick >= ball_speed_y) {
+            change_speed_y = 1;
+        }
+    }
+    //Axe Horizontal
+    if (bot_ball >= top_brick && top_ball <= bot_brick) {
+        //Left collision
+        if (right_ball - left_brick >= 0 && right_ball - left_brick <= ball_speed_x) {
+            change_speed_x = 1;
+        }
+        //Right collision
+        else if (left_ball - right_brick <= 0 && left_ball - right_brick >= ball_speed_x) {
+            change_speed_x = 1;
+        }
+    }
+
+    if (change_speed_y)
+        ball_speed_y = -ball_speed_y;
+    if (change_speed_x)
+        ball_speed_x = -ball_speed_x;
+
+    if (change_speed_x == 1 || change_speed_y == 1) {
+        tabBricks[i][j].lives--;
+    }
+
+}
+
+/**
+ * Collision between ball and bricks
+*/
+void BricksCollision() {
+    for(int i = 0; i < NB_LIGNE; i++) {
+        for(int j = 0; j < NB_BRIQUE; j++) {
+            BrickCollision(i, j);
+        }
+    }
+}
+
 void moveBall() {
     ball_x += ball_speed_x;
     ball_y += ball_speed_y;
 
     WallCollision();
     PaddleCollision();
+    BricksCollision();
 }
 
 void gameLoop() {
