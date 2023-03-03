@@ -1,8 +1,8 @@
 // gcc -o main main.c function.c -lSDL2
 
-#include <SDL2/SDL.h>
 #include <unistd.h>
-#include "function.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 #define WINDOW_WIDTH 64
 #define WINDOW_HEIGHT 32
@@ -122,12 +122,21 @@ void drawBricks() {
     }
 }
 
+void clear() {
+    for(int x = 0; x < WINDOW_WIDTH; x++) {
+        for(int y = 0; y < WINDOW_HEIGHT; y++) {
+            tab_display[x][y].r = 0;
+            tab_display[x][y].g = 0;
+            tab_display[x][y].b = 0;
+        }
+    }
+}
+
 void drawGame() {
     clear();
     drawPaddle();
     drawBall();
     drawBricks();
-    actualize();
     usleep(1000000 / FPS); // 60 images par seconde | 1000000 = 1 seconde
 }
 
@@ -381,11 +390,9 @@ void gameLoop() {
 }
 
 int main() {
-    init(WINDOW_WIDTH, WINDOW_HEIGHT);
     init_game();
     gameLoop();
     printf("Fin du programme\n");
-    freeAndTerminate();
 }
 
 int initBricks (){
