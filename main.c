@@ -4,24 +4,30 @@
 #include <unistd.h>
 #include "function.h"
 
-#define WINDOW_WIDTH 640
-#define WINDOW_HEIGHT 320
+#define WINDOW_WIDTH 64
+#define WINDOW_HEIGHT 32
 #define FPS 60
 
-#define PADDLE_HEIGHT 20
-#define PADDLE_WIDTH WINDOW_WIDTH/3
-#define PADDLE_SPEED 3
-#define BALL_RADIUS 9
-#define NB_LIGNE 4
-#define NB_BRIQUE 10
-#define GAP_VERTI_BRICK 8
-#define GAP_HORIZ_BRICK 8
+#define PADDLE_HEIGHT 3
+#define PADDLE_WIDTH WINDOW_WIDTH
+#define PADDLE_SPEED 2
+#define BALL_RADIUS 2
+#define NB_LIGNE 2
+#define NB_BRIQUE 4
+#define GAP_VERTI_BRICK 5
+#define GAP_HORIZ_BRICK 5
 #define NB_LIVES_BRICKS 1
-#define PIX_WALL 130
+#define PIX_WALL 13
 #define IN_GAME 1
 #define LOSE 2
 #define WIN 3
 #define PAUSE 0
+
+struct rgb {
+    int r, g, b;
+};
+
+struct rgb tab_display[64][32];
 
 float paddle_x;
 float paddle_y;
@@ -30,14 +36,14 @@ float ball_y;
 float ball_speed_x = -2;
 float ball_speed_y = -1;
 int nb_global_bricks = NB_LIGNE * NB_BRIQUE;
-int state_game = PAUSE;
+int state_game = IN_GAME;
 
 int initBricks();
 
 struct rectangle {
     double pos_x;
     double pos_y;
-    double length;
+    double width;
     double height;
     int red;
     int green;
@@ -52,8 +58,8 @@ struct brick {
 struct brick tabBricks[NB_LIGNE][NB_BRIQUE];
 
 void init_game() {
-    paddle_x = 30;
-    paddle_y = WINDOW_HEIGHT - 50;
+    paddle_x = 0;
+    paddle_y = WINDOW_HEIGHT - PADDLE_HEIGHT;
     ball_x = (paddle_x + PADDLE_WIDTH) / 2;
     ball_y = paddle_y - BALL_RADIUS;
     initBricks();
@@ -66,13 +72,33 @@ void init_game() {
  * @param ball
 */
 void drawBall() {
-    changeColor(255,255,255);
-    drawCircle(ball_x, ball_y, BALL_RADIUS);
+    // changeColor(255,255,255);
+    // drawCircle(ball_x, ball_y, BALL_RADIUS);
+
+    for (int i = ball_x - BALL_RADIUS; i <= ball_x + BALL_RADIUS; i++) {
+        for(int j = ball_y - BALL_RADIUS; j <= ball_y + BALL_RADIUS; j++) {
+            int x = i - ball_x;
+            int y = j - ball_y;
+            if (x * x + y * y <= BALL_RADIUS * BALL_RADIUS) {
+                tab_display[i][j].r = 255;
+                tab_display[i][j].g = 255;
+                tab_display[i][j].b = 255;
+            }
+        }
+    }
 }
 
 void drawPaddle() {
-    changeColor(116,148,169);
-    drawRect(paddle_x, paddle_y, PADDLE_WIDTH, PADDLE_HEIGHT);
+    // changeColor(116,148,169);
+    // drawRect(paddle_x, paddle_y, PADDLE_WIDTH, PADDLE_HEIGHT);
+
+    for(int y = paddle_y; y < paddle_y + PADDLE_HEIGHT; y++) {
+        for(int x = paddle_x; x < paddle_x + PADDLE_WIDTH; x++) {
+            tab_display[x][y].r = 116;
+            tab_display[x][y].g = 148;
+            tab_display[x][y].b = 169;
+        }
+    }
 }
 
 void drawBricks() {
@@ -82,8 +108,15 @@ void drawBricks() {
     for (i = 0; i < NB_LIGNE; i++) {
         for (j = 0; j < NB_BRIQUE; j++) {
             if (tabBricks[i][j].lives >= 1) {
-                changeColor(tabBricks[i][j].scrawlBrick.red,tabBricks[i][j].scrawlBrick.green,tabBricks[i][j].scrawlBrick.blue);
-                drawRect(tabBricks[i][j].scrawlBrick.pos_x, tabBricks[i][j].scrawlBrick.pos_y, tabBricks[i][j].scrawlBrick.length, tabBricks[i][j].scrawlBrick.height);
+                // changeColor(tabBricks[i][j].scrawlBrick.red,tabBricks[i][j].scrawlBrick.green,tabBricks[i][j].scrawlBrick.blue);
+                // drawRect(tabBricks[i][j].scrawlBrick.pos_x, tabBricks[i][j].scrawlBrick.pos_y, tabBricks[i][j].scrawlBrick.width, tabBricks[i][j].scrawlBrick.height);
+                for(int y = tabBricks[i][j].scrawlBrick.pos_y; y < tabBricks[i][j].scrawlBrick.pos_y + tabBricks[i][j].scrawlBrick.height; y++) {
+                    for(int x = tabBricks[i][j].scrawlBrick.pos_x; x < tabBricks[i][j].scrawlBrick.pos_x + tabBricks[i][j].scrawlBrick.width; x++) {
+                        tab_display[x][y].r = 116;
+                        tab_display[x][y].g = 148;
+                        tab_display[x][y].b = 169;
+                    }
+                }
             }
         }
     }
@@ -114,23 +147,23 @@ void MovePaddle(int speed) {
     }
 }
 
-void KeyPressed(SDL_Keycode touche) {
-    switch (touche) {
-        case SDLK_q:
-            MovePaddle(-PADDLE_SPEED);
-            break;
-        case SDLK_d:
-            MovePaddle(PADDLE_SPEED);
-            break;
-        case SDLK_ESCAPE:
-            freeAndTerminate();
-            break;
-        case (SDLK_q && SDLK_d):
-            state_game = IN_GAME; 
-        default:
-            break;
-    }
-}
+// void KeyPressed(SDL_Keycode touche) {
+//     switch (touche) {
+//         case SDLK_q:
+//             MovePaddle(-PADDLE_SPEED);
+//             break;
+//         case SDLK_d:
+//             MovePaddle(PADDLE_SPEED);
+//             break;
+//         case SDLK_ESCAPE:
+//             freeAndTerminate();
+//             break;
+//         case (SDLK_q && SDLK_d):
+//             state_game = IN_GAME; 
+//         default:
+//             break;
+//     }
+// }
 
 void joyButtonPressed() {
 
@@ -253,7 +286,7 @@ void BrickCollision(int i, int j) {
     int top_brick = tabBricks[i][j].scrawlBrick.pos_y;
     int bot_brick = tabBricks[i][j].scrawlBrick.pos_y + tabBricks[i][j].scrawlBrick.height;
     int left_brick = tabBricks[i][j].scrawlBrick.pos_x;
-    int right_brick = tabBricks[i][j].scrawlBrick.pos_x + tabBricks[i][j].scrawlBrick.length;
+    int right_brick = tabBricks[i][j].scrawlBrick.pos_x + tabBricks[i][j].scrawlBrick.width;
 
     //
     int change_speed_x = 0, change_speed_y = 0;
@@ -321,25 +354,25 @@ void moveBall() {
 void gameLoop() {
     int programLaunched = 1;
     while (programLaunched == 1) {
-        SDL_Event event;
-        while (SDL_PollEvent(&event)) {
-            // boucle pour la gestion d'évenement
-            switch (event.type) {
-                case SDL_QUIT:
-                    programLaunched = 0;
-                    break;
-                case SDL_MOUSEBUTTONUP:
-                    printf("position de la souris x : %d , y : %d\n", event.motion.x, event.motion.y);
-                    break;
-                case SDL_KEYDOWN:
-                    KeyPressed(event.key.keysym.sym);
-                    break;
-                case SDL_JOYBUTTONDOWN:
-                    break;
-                default:
-                    break;
-            }
-        }
+        // SDL_Event event;
+        // while (SDL_PollEvent(&event)) {
+        //     // boucle pour la gestion d'évenement
+        //     switch (event.type) {
+        //         case SDL_QUIT:
+        //             programLaunched = 0;
+        //             break;
+        //         case SDL_MOUSEBUTTONUP:
+        //             printf("position de la souris x : %d , y : %d\n", event.motion.x, event.motion.y);
+        //             break;
+        //         case SDL_KEYDOWN:
+        //             KeyPressed(event.key.keysym.sym);
+        //             break;
+        //         case SDL_JOYBUTTONDOWN:
+        //             break;
+        //         default:
+        //             break;
+        //     }
+        // }
         if (state_game == IN_GAME) {
             moveBall();
             drawGame();
@@ -374,9 +407,9 @@ int initBricks (){
                 tabBricks[i][j].scrawlBrick.blue = 209;
             }
             tabBricks[i][j].scrawlBrick.height = ((PIX_WALL / NB_LIGNE) - GAP_VERTI_BRICK);
-            tabBricks[i][j].scrawlBrick.length = (((WINDOW_WIDTH - GAP_HORIZ_BRICK)/NB_BRIQUE)-GAP_HORIZ_BRICK);
+            tabBricks[i][j].scrawlBrick.width = (((WINDOW_WIDTH - GAP_HORIZ_BRICK)/NB_BRIQUE)-GAP_HORIZ_BRICK);
             /* Formule qui calcule la position x de chaque case du tableau*/
-            tabBricks[i][j].scrawlBrick.pos_x = (GAP_HORIZ_BRICK + ((tabBricks[i][j].scrawlBrick.length + GAP_HORIZ_BRICK)*j));
+            tabBricks[i][j].scrawlBrick.pos_x = (GAP_HORIZ_BRICK + ((tabBricks[i][j].scrawlBrick.width + GAP_HORIZ_BRICK)*j));
             /* Formule qui calcule la position y de chaque case du tableau*/
             tabBricks[i][j].scrawlBrick.pos_y = (GAP_VERTI_BRICK +((tabBricks[i][j].scrawlBrick.height + GAP_VERTI_BRICK)*i));
         }
