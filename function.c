@@ -28,7 +28,6 @@ void checkPos(int x, int y){
     }
     if (y < 0) {
         printf("ATTENTION position y < 0 (y = %d)\n", x);
-        printf("ATTENTION position y > hauteur de la fenetre (y = %d > %d)\n", y, window_height);
         out();
     }
     if (y > window_height) {
@@ -117,8 +116,8 @@ void drawSquare(int posX, int posY, int longueur) {
      *  @param posY position sur l'axe verticale du coin supérieur gauche du carré
      *  @param longueur longeur du coté du carré
      */
-    checkPos(posX + 20, posY + 20);
-    checkPos(posX + longueur - 20, posY + longueur - 20);
+    checkPos(posX, posY);
+    checkPos(posX + longueur, posY + longueur);
     SDL_Rect rectangle;
     rectangle.x = posX;
     rectangle.y = posY;
@@ -138,8 +137,8 @@ void drawRect(int posX, int posY, int longueur, int hauteur) {
      *  @param longueur longeur du coté du rectangle
      *  @param hauteur hauteur du coté du carré
      */
-    checkPos(posX + 20, posY + 20);
-    checkPos(posX + longueur - 20, posY + hauteur - 20);
+    checkPos(posX, posY);
+    checkPos(posX + longueur, posY + hauteur);
 
     for(int y = posY; y < posY + hauteur; y++) {
         for(int x = posX; x < posX + longueur; x++) {
@@ -155,8 +154,8 @@ void drawCircle(int centerX, int centerY, int rayon) {
      *  @param centerY position sur l'axe vertical du centre
      *  @param rayon le rayon du cercle
      */
-    checkPos(centerX - rayon + 20, centerY - rayon + 20);
-    checkPos(centerX + rayon - 20, centerY + rayon - 20);
+    checkPos(centerX - rayon, centerY - rayon);
+    checkPos(centerX + rayon, centerY + rayon);
     for (int i = centerX - rayon; i <= centerX + rayon; i++) {
         for(int j = centerY - rayon; j <= centerY +rayon; j++) {
             int x = i - centerX;
