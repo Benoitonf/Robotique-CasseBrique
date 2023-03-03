@@ -60,12 +60,12 @@ void init_game() {
  * @param ball
 */
 void drawBall() {
-    changeColor(100,50,200);
+    changeColor(255,255,255);
     drawCircle(ball_x, ball_y, BALL_RADIUS);
 }
 
 void drawPaddle() {
-    changeColor(0,0,255);
+    changeColor(116,148,169);
     drawRect(paddle_x, paddle_y, PADDLE_WIDTH, PADDLE_HEIGHT);
 }
 
@@ -76,7 +76,7 @@ void drawBricks() {
     for (i = 0; i < NB_LIGNE; i++) {
         for (j = 0; j < NB_BRIQUE; j++) {
             if (tabBricks[i][j].lives >= 1) {
-                changeColor(tabBricks[i][j].scrawlBrick.red,tabBricks[i][j].scrawlBrick.green,tabBricks[i][j].scrawlBrick.green);
+                changeColor(tabBricks[i][j].scrawlBrick.red,tabBricks[i][j].scrawlBrick.green,tabBricks[i][j].scrawlBrick.blue);
                 drawRect(tabBricks[i][j].scrawlBrick.pos_x, tabBricks[i][j].scrawlBrick.pos_y, tabBricks[i][j].scrawlBrick.length, tabBricks[i][j].scrawlBrick.height);
             }
         }
@@ -353,13 +353,13 @@ int initBricks (){
         for (j = 0; j < NB_BRIQUE; j++) {
             tabBricks[i][j].lives = NB_LIVES_BRICKS;           
             if ((i+j)%2 == 0) {
-                tabBricks[i][j].scrawlBrick.red = 2;
-                tabBricks[i][j].scrawlBrick.green = 181;
-                tabBricks[i][j].scrawlBrick.blue = 160;
+                tabBricks[i][j].scrawlBrick.red = 251;
+                tabBricks[i][j].scrawlBrick.green = 226;
+                tabBricks[i][j].scrawlBrick.blue = 22;
             } else {
-                tabBricks[i][j].scrawlBrick.red = 248;
-                tabBricks[i][j].scrawlBrick.green = 169;
-                tabBricks[i][j].scrawlBrick.blue = 107;
+                tabBricks[i][j].scrawlBrick.red = 175;
+                tabBricks[i][j].scrawlBrick.green = 165;
+                tabBricks[i][j].scrawlBrick.blue = 209;
             }
             tabBricks[i][j].scrawlBrick.height = ((PIX_WALL / NB_LIGNE) - GAP_VERTI_BRICK);
             tabBricks[i][j].scrawlBrick.length = (((WINDOW_WIDTH - GAP_HORIZ_BRICK)/NB_BRIQUE)-GAP_HORIZ_BRICK);
